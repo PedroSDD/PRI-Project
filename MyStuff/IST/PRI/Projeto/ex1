@@ -40,10 +40,13 @@ def words_doc_test(dictionary_tfidf, candidates_doc):
     return words_doc_ranked
 
 def get_best_candidate(words_doc_ranked):
-    print sorted(words_doc_ranked, key=itemgetter(1))[-5:]
+    return sorted(words_doc_ranked, key=itemgetter(1))[-5:]
 
 
-candidates_doc = candidate_selector('text.rtf')
-res = score_candidates(candidates_doc)
-res1 = words_doc_test(res, candidates_doc)
-get_best_candidate(res1)
+def initializer():
+    candidates_doc = candidate_selector('text.rtf')
+    candidate_score = score_candidates(candidates_doc)
+    words_both_documents = words_doc_test(candidate_score, candidates_doc)
+    get_best_candidate(words_both_documents)
+
+initializer()
