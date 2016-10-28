@@ -1,0 +1,49 @@
+# Simple approach based on TF-IDF
+
+from nltk.corpus import stopwords
+from sklearn.datasets import fetch_20newsgroups
+from sklearn.feature_extraction.text import TfidfVectorizer
+from operator import itemgetter
+import logging
+logging.basicConfig()
+
+stopWords = stopwords.words('English')
+
+#This method return the canditates of my file
+def candidate_selector(filename):
+    file_name = open(filename)
+    candidates_doc = []
+
+    for line in file_name.readlines():
+        for word in line.split():
+            if word not in stopWords:
+                candidates_doc.append(word)
+
+    return candidates_doc
+
+# Changing the content from text into
+def score_candidates(candidates_doc):
+    train = fetch_20newsgroups(subset='train')
+    vectorizer = TfidfVectorizer(min_df=1)  #  Convert a collection of raw documents to a matrix of TF-IDF features.
+    train_vec = vectorizer.fit_transform(train.data)
+    my_doc_tfidf = vectorizer.transform(candidates_doc)
+    idf = vectorizer.idf_
+
+    dictionary_tfidf = dict(zip(vectorizer.get_feature_names(), idf))
+    return dictionary_tfidf
+
+def words_doc_test(dictionary_tfidf, candidates_doc):
+    words_doc_ranked = []
+    for candidates in candidates_doc:
+        if candidates in dictionary_tfidf and candidates not in words_doc_ranked:
+            words_doc_ranked.append(tuple([candidates, dictionary_tfidf[candidates]]))
+    return words_doc_ranked
+
+def get_best_candidate(words_doc_ranked):
+    print sorted(words_doc_ranked, key=itemgetter(1))[-5:]
+
+
+candidates_doc = candidate_selector('text.rtf')
+res = score_candidates(candidates_doc)
+res1 = words_doc_test(res, candidates_doc)
+get_best_candidate(res1)
