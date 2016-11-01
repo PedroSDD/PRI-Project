@@ -1,0 +1,43 @@
+# Exercise 2
+
+import codecs
+import os
+from whoosh.index import create_in
+from whoosh.fields import *
+from whoosh.index import open_dir
+from whoosh.qparser import *
+
+#Method that indexes all documents
+def indexing_documents(path):
+    schema = Schema(id=NUMERIC(stored=True), content=TEXT)
+    ix = create_in("indexdir", schema)
+    writer = ix.writer()
+    for file in os.listdir(path):
+        if file.endswith(".txt"):
+            content_file = open(os.path.join(path, file))
+            writer.add_document(id=int(file.split('.')[0]), content=unicode(content_file.read().replace('\n', ' '), errors='replace'))
+    writer.commit()
+
+def similiarity_ranking(query_to_be_searched):
+    ix = open_dir("indexdir")   # Abre o directorio
+    with ix.searcher() as searcher:  # search inside a directory
+        query = QueryParser("content", ix.schema, group=OrGroup).parse(query_to_be_searched)  #criado o objeto queryparser ao qual vai ser feito o parser
+        results = searcher.search(query, limit=100)  # procura a query pedida e devolve o resultado
+        for r in results:
+            print r
+        print "Number of results:", results.scored_length()  # devolve os resultados pedidos
+
+
+
+
+
+
+
+
+
+
+
+indexing_documents('/Users/Dias/Desktop/MyStuff/IST/PRI/Projeto/NLM_500/documents')
+similiarity_ranking("Electronic Health Record Meets Digital Library")
+#res1, res2 = get_doc_content('/Users/Dias/Desktop/MyStuff/IST/PRI/Projeto/NLM_500/documents')
+#score_candidates(res1, res2)
