@@ -1,6 +1,4 @@
 # Exercise 2
-
-import codecs
 import os
 from whoosh.index import create_in
 from whoosh.fields import *
@@ -18,26 +16,40 @@ def indexing_documents(path):
             writer.add_document(id=int(file.split('.')[0]), content=unicode(content_file.read().replace('\n', ' '), errors='replace'))
     writer.commit()
 
-def similiarity_ranking(query_to_be_searched):
+def documents_return_by_query(query_to_be_searched):
     ix = open_dir("indexdir")   # Abre o directorio
+    docs_by_query = {}
     with ix.searcher() as searcher:  # search inside a directory
         query = QueryParser("content", ix.schema, group=OrGroup).parse(query_to_be_searched)  #criado o objeto queryparser ao qual vai ser feito o parser
         results = searcher.search(query, limit=100)  # procura a query pedida e devolve o resultado
         for r in results:
-            print r
-        print "Number of results:", results.scored_length()  # devolve os resultados pedidos
+            docs_by_query[str(r["id"])] = [""]
+        number_files = results.scored_length()
+       # print "Number of results:", number_files  # devolve os resultados pedidos
 
+        return docs_by_query
 
+def relevant_document(path):
+    relevant_document = dict()
+    for file_name in os.listdir(path):
+        if file_name.endswith(".key"):
+            file = open((os.path.join(path, file_name)))
+            content_file = file.read().replace('\n', ' ')
+            relevant_document[file_name.split('.')[0]] = [content_file]
 
+    return relevant_document
 
+def precision_calculator(relevant_document, documents_return_by_query):
+    print float((len(set(documents_return_by_query.keys()) & set(relevant_document))))/float((len(relevant_document)))
 
-
-
-
-
+def recall_calculator(relevant_document, documents_return_by_query):
+    print float((len(set(documents_return_by_query.keys()) & set(relevant_document))))/float((len(documents_return_by_query.keys())))
 
 
 indexing_documents('/Users/Dias/Desktop/MyStuff/IST/PRI/Projeto/NLM_500/documents')
-similiarity_ranking("Electronic Health Record Meets Digital Library")
+relevant_document = relevant_document('/Users/Dias/Desktop/MyStuff/IST/PRI/Projeto/NLM_500/documents')
+documents_return_by_query = documents_return_by_query("Adult Female Incidence Humans")
+precision_calculator(relevant_document, documents_return_by_query)
+recall_calculator(relevant_document, documents_return_by_query)
 #res1, res2 = get_doc_content('/Users/Dias/Desktop/MyStuff/IST/PRI/Projeto/NLM_500/documents')
 #score_candidates(res1, res2)
