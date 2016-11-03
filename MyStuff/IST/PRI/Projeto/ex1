@@ -22,12 +22,12 @@ def score_candidates(filename ):
 
     for pair in feature_sorted:
         feature_name_sorted.append(feature_names[pair[0]])
-
-
+    print feature_name_sorted
     return feature_name_sorted
 
+
 def initializer():
-    score_candidates('text.rtf')
+    score_candidates('teste')
 
 
 initializer()
