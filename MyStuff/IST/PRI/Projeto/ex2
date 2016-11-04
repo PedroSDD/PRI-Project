@@ -45,20 +45,32 @@ def get_key_values(file):
 
 
 def precision(retrieved, relevant):
-    precision_result = float((len(list(set(retrieved) & set(relevant))))) / float((len(retrieved)))
-    print "Precision: ", precision_result
-    return precision_result
+    if len(retrieved) == 0:
+        print "Resultado foi: 0"
+        return 0
+    else:
+        precision_result = float((len(list(set(retrieved) & set(relevant))))) / float((len(retrieved)))
+        print "Precision: ", precision_result
+        return precision_result
 
 
 def recall(a, r):
-    recall_result = float((len(set(iter(a)) & set(iter(r))))) / float((len(r)))
-    print "Recall: ", recall_result
-    return recall_result
+    if len(r) == 0:
+        print "Resultado foi: 0"
+        return 0
+    else:
+        recall_result = float((len(set(iter(a)) & set(iter(r))))) / float((len(r)))
+        print "Recall: ", recall_result
+        return recall_result
 
 
 def f1(pr, re):
-    f1_result = float(((2 * re * pr) / (re + pr)))
-    print "f1 score: ",  f1
+    if re + pr == 0:
+        print "Resultado foi: 0"
+        return 0
+    else:
+        f1_result = float(((2 * re * pr) / (re + pr)))
+    print "f1 score: ",  f1_result
     return f1
 
 from os import walk
@@ -78,7 +90,12 @@ def initializer():
             r = get_key_values('NLM_500/documents/' + name)
             name = name[:-3] + 'txt'
             a = score_candidates('NLM_500/documents', 'NLM_500/documents/' + name, vectorizer)
+            print "Nome do ficheiro", name
             pr = precision(a, r)
+            #####Meti aqui estas 2 linhas pq tem de calcular para cada file tanto a precisao, recall e f1
+            re = recall(a, r)
+            f1(pr, re)
+            ########
             #recall e f1
             #print(pr)
             pr_mean += [pr]
@@ -86,7 +103,7 @@ def initializer():
     for val in pr_mean:
         temp += val
     print('Mean Precision', temp/len(pr_mean))
-    # re = recall(a, r)
-    # f1(pr, re)
+    re = recall(a, r)
+    f1(pr, re)
 
 initializer()
