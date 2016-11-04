@@ -1,5 +1,4 @@
 import codecs
-import os
 import string
 
 import math
@@ -29,33 +28,49 @@ def create_ngram_dictionary(n_gram_generated):
             dictionary_n_gram[n_gram] = 1
         else:
             dictionary_n_gram[n_gram] += 1
+
     return dictionary_n_gram
 
 def n_grams_filtered(file_clean, n):
     return find_ngrams(file_clean, n)
 
-def calc_prob(file_clean, n, n_gram):
-    count = 0
-    for word in file_clean:
-        if word == n_gram:
-            count += 1
 
-    if n == 1:
-        produt = count / float(len(file_clean))
-        return produt
-
+def calculate_prob(n_gram_dictionary, n_grams_filtered, n):
+    i = 0
+    prob = 1
+    size = len(n_grams_filtered)
+    for n_gram in n_grams_filtered:
+        if not i % n == 0:
+            prob *= (0 + 1.0)/(size + len(n_gram_dictionary))
+        else:
+            prob *= (n_gram_dictionary[n_gram] + 1.0) / (size + len(n_gram_dictionary))
+        size -= 1
+        i += 1
+    print "Valor da probabilidade :", prob
+    return prob
 
 def sigma_calculator(pw, qw):
-    print "Valor do sigma e :",  pw * math.log(pw/qw)
+    print "Valor do sigma e :",  pw * math.log(pw, qw)
     return pw * math.log(pw, qw)
-
 
 def initializer():
     input_list_clean = file_cleaner('testeex4')
-    #calc_prob(input_list_clean, 2, "is")
-
-    pw = calc_prob(input_list_clean, 1, "is")
-    qw = calc_prob(input_list_clean, 1, "is")
+    n_gram_generated = find_ngrams(input_list_clean, 2)
+    n_gram_dictionary = create_ngram_dictionary(n_gram_generated)
+    n_gram_filtered = n_grams_filtered(input_list_clean, 2)
+    pw = calculate_prob(n_gram_dictionary,n_gram_filtered, 2)
+    qw = calculate_prob(n_gram_dictionary,n_gram_filtered, 1)
     sigma_calculator(pw, qw)
 
 initializer()
+
+
+
+def calc_prob(file_clean, n, n_gram, n_gram_generated):
+    if n == 1:
+        produtorium = n_gram_generated[n_gram] / len()
+
+    if n == 2:
+        produtorium = list_aux[2][n_gram] / list_aux[1][n_gram[0]]
+
+    return produtorium
