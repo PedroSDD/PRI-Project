@@ -78,6 +78,4 @@ def initializer():
             candidates_true=candidates_filter(candidates)
             print (' For file' + file + 'we get: ' + candidates_true)
 
-    return
-
 initializer()
