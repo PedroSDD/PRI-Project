@@ -32,7 +32,7 @@ def score_candidates(path, filename, vectorizer):
     feature_name_sorted = []
     for pair in feature_sorted:
         feature_name_sorted.append(feature_names[pair[0]])
-    print feature_name_sorted
+    #print feature_name_sorted
     return feature_name_sorted
 
 
@@ -45,15 +45,21 @@ def get_key_values(file):
 
 
 def precision(retrieved, relevant):
-    return "Precision: ", float((len(list(set(retrieved) & set(relevant))))) / float((len(retrieved)))
+    precision_result = float((len(list(set(retrieved) & set(relevant))))) / float((len(retrieved)))
+    print "Precision: ", precision_result
+    return precision_result
 
 
 def recall(a, r):
-    return "Recall: ", float((len(set(iter(a)) & set(iter(r))))) / float((len(r)))
+    recall_result = float((len(set(iter(a)) & set(iter(r))))) / float((len(r)))
+    print "Recall: ", recall_result
+    return recall_result
 
 
 def f1(pr, re):
-    return "f1 score: ", float(((2 * re * pr) / (re + pr)))
+    f1_result = float(((2 * re * pr) / (re + pr)))
+    print "f1 score: ",  f1
+    return f1
 
 from os import walk
 
@@ -74,7 +80,7 @@ def initializer():
             a = score_candidates('NLM_500/documents', 'NLM_500/documents/' + name, vectorizer)
             pr = precision(a, r)
             #recall e f1
-            print(pr)
+            #print(pr)
             pr_mean += [pr]
     temp = 0
     for val in pr_mean:
