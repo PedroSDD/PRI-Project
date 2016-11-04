@@ -52,10 +52,11 @@ def sigma_calculator(pw, qw):
 
 def initializer():
     input_list_clean = file_cleaner('testeex4')
-    #calc_prob(input_list_clean, 2, "is")
-
     pw = calc_prob(input_list_clean, 1, "is")
     qw = calc_prob(input_list_clean, 1, "is")
-    sigma_calculator(pw, qw)
+    print "O valor do pw: ", pw
+    print "O valor do qw: ", qw
+    lmfg = sigma_calculator(pw, qw)
+    print "O valor do lmfg: ", lmfg
 
 initializer()
