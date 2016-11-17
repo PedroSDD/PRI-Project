@@ -43,15 +43,15 @@ def create_graph(list_phrases, key_phrases_dic):
     for phrase in list_phrases:
         for word in phrase:
             if word in key_phrases_dic:
-                list_aux.append(word)
+                list_keywords_phrase.append(word)
                 graph[word] = list_keywords_phrase
         list_keywords_phrase = []
     return graph
 
 def initializer():
     key_phrase_dic = score_candidates('teste')
-    res2 = phrases_spliter('teste')
-    create_graph(res2, key_phrase_dic)
+    list_phrases = phrases_spliter('teste')
+    create_graph(list_phrases, key_phrase_dic)
 
 initializer()
 
