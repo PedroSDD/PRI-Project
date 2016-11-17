@@ -39,13 +39,13 @@ def phrases_spliter(filename):
 
 def create_graph(list_phrases, key_phrases_dic):
     graph = {}
-    list_aux = []
+    list_keywords_phrase = []
     for phrase in list_phrases:
         for word in phrase:
             if word in key_phrases_dic:
                 list_aux.append(word)
-                graph[word] = list_aux
-        list_aux = []
+                graph[word] = list_keywords_phrase
+        list_keywords_phrase = []
     return graph
 
 def initializer():
