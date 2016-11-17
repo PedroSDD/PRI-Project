@@ -1,0 +1,26 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504
+{\fonttbl\f0\froman\fcharset0 Times-Roman;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+{\*\expandedcolortbl;\csgray\c100000;\cssrgb\c0\c0\c0;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\sl360\sa240\partightenfactor0
+
+\f0\fs32 \cf2 \expnd0\expndtw0\kerning0
+Automatic keyphrase extraction is typically a two-step process: first, a set of words and phrases that could convey the topical content of a document are identified. Then, these candidates are scored/ranked, so that the 
+\i best 
+\i0 candidates (i.e., the top-ranked ones) are selected as a document\'92s keyphrases. The keyphrase extraction method should now be applied to documents from one of the datasets available at https://github.com/zelandiya/keyword-extraction-datasets. 
+\fs24 \
+
+\fs32 In this case, the IDF scores should be estimated with basis on the entire collection of docu- ments, in the dataset of your choice, instead of relying on the 20 newsgroups collection. 
+\fs24 \
+
+\fs32 Using one of the aforementioned datasets, for which we know what are the most relevant keyphrases that should be associated to each document, your program should print the precision, recall, and F1 scores achieved by the simple extraction method. Your program should also print the mean average precision. 
+\fs24 \
+
+\fs32 Write a Python program that improves on the keyphrase extraction method from Exercise 1, considering the following two aspects, as well as other aspects that you deem to be relevant (i.e., the evaluation for this exercise will value creative solutions, proposed to improve the results for keyphrase extraction). \
+The candidate selection phase should now consider longer word n-grams (where 1 \uc0\u8804  n \u8804  3), afterwards filtering the candidates according to a particular regular pattern involving parts-of- speech tags. The idea is to limit candidates to noun phrases matching a parts-of-speech regular expression pattern like \{(<JJ>\dn6 * \up0 <NN.\dn6 *\up0 >+ <IN>)? <JJ>\dn6 * \up0 <NN.\dn6 *\up0 >+\}+. 
+\fs24 \
+
+\fs32 Parts-of-speech tags for the words in the textual documents can be obtained by the tagger from the nltk package, which was introduced in the lab classes. \
+}
