@@ -41,14 +41,11 @@ def create_graph(list_phrases, key_phrases_dic):
     graph = {}
     list_aux = []
     for phrase in list_phrases:
-        print phrase
         for word in phrase:
             if word in key_phrases_dic:
                 list_aux.append(word)
-        graph[word] = list_aux
+                graph[word] = list_aux
         list_aux = []
-
-    print graph
     return graph
 
 def initializer():

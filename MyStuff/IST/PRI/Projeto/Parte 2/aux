@@ -1,0 +1,23 @@
+   '''
+                list_aux.append(word)
+            graph[word] = list_aux
+            list_aux = []
+            '''
+
+
+ def create_graph(list_phrases, key_phrases_dic):
+    graph = {}
+    list_aux = []
+    for phrase in list_phrases:
+        for word in phrase:
+            if word in key_phrases_dic and word not in graph:
+                graph[word] = []
+
+    for phrase in list_phrases:
+        for word in phrase:
+            if word in key_phrases_dic:
+                list_aux.append(word)
+        graph[word] = list_aux
+
+    print graph
+    return graph
