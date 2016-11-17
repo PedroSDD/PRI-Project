@@ -25,7 +25,6 @@ def score_candidates(filename):
     for word in feature_name_sorted:
         key_phrases_dic[word] = 0
 
-    print key_phrases_dic
     return key_phrases_dic
 
 def phrases_spliter(filename):
@@ -48,10 +47,47 @@ def create_graph(list_phrases, key_phrases_dic):
         list_keywords_phrase = []
     return graph
 
+def pageRank(grafo, d, l):
+    resultado = {}
+
+    invertido = {}
+    for key, value in grafo.iteritems():
+
+        if key not in invertido.keys():
+            invertido[key] = []
+        for reference in value:
+            if reference not in invertido.keys():
+                invertido[reference] = []
+            invertido[reference].append(key)
+
+
+    numPages = len(grafo)
+    for key, value in grafo.iteritems():
+        resultado[key] = 1/(numPages*1.0)
+
+    N = (numPages*1.0)
+    for times in range(1, l+1):
+        anterior = resultado.copy()
+        for page in resultado.keys():
+
+            somatorio = 0
+            for reference in grafo[page]:
+                v = anterior[reference] / (len(invertido[reference])*1.0)
+                somatorio += anterior[reference]/(len(invertido[reference])*1.0)
+            resultado[page] = (1-d) *  1.0/ N + d * somatorio
+    print resultado
+    return resultado
+
+
+
+
+
+
 def initializer():
     key_phrase_dic = score_candidates('teste')
     list_phrases = phrases_spliter('teste')
-    create_graph(list_phrases, key_phrase_dic)
+    graph = create_graph(list_phrases, key_phrase_dic)
+    pageRank(graph, 1, 1)
 
 initializer()
 
