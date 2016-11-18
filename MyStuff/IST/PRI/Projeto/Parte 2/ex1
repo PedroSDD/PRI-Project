@@ -60,7 +60,6 @@ def pageRank(grafo, d, l):
                 invertido[reference] = []
             invertido[reference].append(key)
 
-
     numPages = len(grafo)
     for key, value in grafo.iteritems():
         resultado[key] = 1/(numPages*1.0)
@@ -77,10 +76,6 @@ def pageRank(grafo, d, l):
             resultado[page] = (1-d) *  1.0/ N + d * somatorio
     print resultado
     return resultado
-
-
-
-
 
 
 def initializer():
