@@ -49,34 +49,36 @@ def create_graph(list_phrases, key_phrases_dic):
 
 def pageRank(grafo, d, l):
     resultado = {}
-
     invertido = {}
-    for key, value in grafo.iteritems():
 
+    for key, value in grafo.iteritems():
         if key not in invertido.keys():
             invertido[key] = []
+
         for reference in value:
             if reference not in invertido.keys():
                 invertido[reference] = []
             invertido[reference].append(key)
 
     numPages = len(grafo)
+
     for key, value in grafo.iteritems():
         resultado[key] = 1/(numPages*1.0)
 
     N = (numPages*1.0)
+
     for times in range(1, l+1):
         anterior = resultado.copy()
-        for page in resultado.keys():
 
+        for page in resultado.keys():
             somatorio = 0
+
             for reference in grafo[page]:
                 v = anterior[reference] / (len(invertido[reference])*1.0)
                 somatorio += anterior[reference]/(len(invertido[reference])*1.0)
-            resultado[page] = (1-d) *  1.0/ N + d * somatorio
-    print resultado
-    return resultado
+            resultado[page] = (1-d) * 1.0 / N + d * somatorio
 
+    return resultado
 
 def initializer():
     key_phrase_dic = score_candidates('teste')

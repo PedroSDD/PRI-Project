@@ -1,0 +1,18 @@
+def pageRankExtended(grafo, node, ):
+    d = 0.15
+
+    res_parcel_1 = d * (prior / sumPrior) + (1-d)
+
+
+def sumPrior(grafo):
+
+ sum_res = 1.0
+    for key_phrase in graph:
+        if key_phrase_pj in graph:
+            print graph[key_phrase_pk]
+            for key_phrase_aux in graph[key_phrase_pk]:
+                print key_phrase_aux
+                if key_phrase_pj == key_phrase_aux:
+                    sum_res = (0.375*0.25)/(sumDenominator(graph, key_phrase_pk, key_phrase_pj))
+    print sum_res
+    return sum_res
