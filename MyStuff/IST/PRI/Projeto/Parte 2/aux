@@ -16,3 +16,13 @@ def sumPrior(grafo):
                     sum_res = (0.375*0.25)/(sumDenominator(graph, key_phrase_pk, key_phrase_pj))
     print sum_res
     return sum_res
+
+
+    def calculatePrior(graph, node, flag):
+    probability = 1.0
+    if flag != 0:
+        for keyphrase in graph:
+            if keyphrase == node:
+                probability += 1
+        return probability
+    return probability

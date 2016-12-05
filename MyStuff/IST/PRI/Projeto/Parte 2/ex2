@@ -48,13 +48,28 @@ def create_graph(list_phrases, key_phrases_dic):
         list_keywords_phrase = []
     return graph
 
+#def calculateWeightDyanmic(graph, key_phrase_pk, key_phrase_pj):
+
+
+#def calculatePositionPrior()
+
+
+
+def calculateTfidfPrior(graph,node,key_phrases_values, flag):
+    probability = 1.0
+    if flag != 0:
+        for keyphrase in key_phrases_values:
+            if keyphrase in graph:
+                probability += key_phrases_values[keyphrase]
+        return probability
+    probability *= key_phrases_values[node]
+    return probability
+
 def sumPrior(graph, key_phrases_values):
     result_sum = 0
-
     for keyphrase in key_phrases_values:
         if keyphrase in graph:
             result_sum += key_phrases_values[keyphrase]
-
     return result_sum
 
 
@@ -65,10 +80,7 @@ def sumDenominator(graph, key_phrase_pk, key_phrase_pj):
             for key_phrase_pj_value in graph[key_phrase_pj]:
                 if key_phrase_pj_value == key_phrase_pk:
                     res_weight += 1                             #Calcula o peso.  Querem por outra cena?
-
     return res_weight
-
-#def calculateWeight(graph, key_phrase_pk, key_phrase_pj):
 
 
 def sum2Parcel(key_phrase_pi, key_phrase_pk, key_phrase_pj, graph):
@@ -80,16 +92,16 @@ def sum2Parcel(key_phrase_pi, key_phrase_pk, key_phrase_pj, graph):
                     sum_res = (0.375*0.25)/(sumDenominator(graph, key_phrase_pk, key_phrase_pj))
     return sum_res
 
+def sum1Parcel(graph, key_phrase_pi, key_phrases_values):
+    return 0.15 * (calculateStaticPrior(graph, key_phrase_pi, 0) / sumPrior(graph, key_phrases_values)) + (1-0.15)
 
-def pageRankExtended(graph, key_phrases_values, prior, key_phrase_pi, key_phrase_pk, key_phrase_pj):
-    d = 0.15
 
-    result_parcel_1 = 1.0 * (d * (prior / sumPrior(graph, key_phrases_values)) + (1-d))
+def pageRankExtended(graph, key_phrases_values, key_phrase_pi, key_phrase_pk, key_phrase_pj):
 
+    result_parcel_1 = 1.0 * sum1Parcel(graph, key_phrase_pi, key_phrases_values)
     result_parcel_2 = 1.0 * sum2Parcel(key_phrase_pi, key_phrase_pk, key_phrase_pj, graph)
 
     print "Page Rank result", result_parcel_1 * result_parcel_2
-
     return result_parcel_1 * result_parcel_2 
 
 def initializer():
