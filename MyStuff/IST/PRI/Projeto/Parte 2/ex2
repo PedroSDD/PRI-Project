@@ -1,13 +1,23 @@
-from sklearn.datasets import fetch_20newsgroups
+from __future__ import division
 from sklearn.feature_extraction.text import TfidfVectorizer
 from operator import itemgetter
+import os
+import codecs
 
-def score_candidates(filename):
+def read_files_text(path):
+    content_all_files = []
+    for file in os.listdir(path):
+        if file.endswith(".txt"):
+            content = codecs.open(os.path.join(path, file), encoding='utf-8', errors='replace')
+            content_all_files.append(content.read())
+    return content_all_files
+
+
+def score_candidates(filename, train):
 
     file_name = open(filename)
-    train = fetch_20newsgroups(subset='train')
     vectorizer = TfidfVectorizer(use_idf=False, stop_words='english', ngram_range=(1, 3))
-    vectorizer.fit_transform(train.data)
+    vectorizer.fit_transform(train)
     my_doc_tfidf = vectorizer.transform(file_name)
 
     feature_names = vectorizer.get_feature_names()
@@ -26,8 +36,7 @@ def score_candidates(filename):
 
     for word in feature_name_sorted:
         key_phrases_dic[word] = 0
-
-
+    print key_phrases_values
     return key_phrases_dic, key_phrases_values, feature_name_sorted
 
 def phrases_spliter(filename):
@@ -38,15 +47,46 @@ def phrases_spliter(filename):
             list_phrases.append(words.split())
         return list_phrases
 
+def check_keys(key_word, graph):
+    for key in graph:
+        if key_word in graph:
+            return True
+    return False
+
 def create_graph(list_phrases, key_phrases_dic):
     graph = {}
     list_keywords_phrase = []
+    list_keywords_phrase_bi = []
+    list_keywords_phrase_tri = []
+
+
     for phrase in list_phrases:
-        for word in phrase:
+
+        sentence = [x.lower() for x in phrase]
+        bigrams = zip(sentence, sentence[1:])
+        trigrams = zip(sentence, sentence[1:], sentence[2:])
+
+        for word in sentence:
             if word in key_phrases_dic:
                 list_keywords_phrase.append(word)
                 graph[word] = list_keywords_phrase
+
+        for j in bigrams:
+            big_str = j[0] + ' ' + j[1]
+            if big_str in key_phrases_dic:
+                list_keywords_phrase_bi.append(big_str)
+                graph[big_str] = list_keywords_phrase_bi
+
+        for i in trigrams:
+            trig_str = i[0] + ' ' + i[1] + ' ' + i[2]
+            if trig_str in key_phrases_dic:
+                list_keywords_phrase_tri.append(trig_str)
+                graph[trig_str] = list_keywords_phrase_tri
+
         list_keywords_phrase = []
+        list_keywords_phrase_bi = []
+        list_keywords_phrase_tri = []
+
     return graph
 
 def keyPhraseOcurrenceLine(filename, key_phrases_list):
@@ -64,6 +104,7 @@ def keyPhraseOcurrenceLine(filename, key_phrases_list):
                     key_phrases_occurrence_phrase.get(word, []).append(nr_phrase)
     return key_phrases_occurrence_phrase
 
+#Topic one
 def calculatePositionPrior(key_phrases_occurrence_phrase, node, flag):
     probability = 0
     if flag != 0:
@@ -77,7 +118,7 @@ def calculatePositionPrior(key_phrases_occurrence_phrase, node, flag):
                 probability += 1.0/nr_phrase
     return probability
 
-
+#Topic three
 def calculateOcurrenceWeight(graph, key_phrase_pk, key_phrase_pj):
     weight_value = 1.0
     for key_phrase in graph:
@@ -94,15 +135,15 @@ def calculateOcurrenceWeight(graph, key_phrase_pk, key_phrase_pj):
     print weight_value
     return weight_value
 
-
-def calculateTfidfPrior(graph,node,key_phrases_values, flag):
+#Topic two
+def calculateTfidfPrior(graph,key_phrases_pi,key_phrases_values, flag):
     probability = 1.0
     if flag != 0:
         for keyphrase in key_phrases_values:
             if keyphrase in graph:
                 probability += key_phrases_values[keyphrase]
         return probability
-    probability *= key_phrases_values[node]
+    probability *= key_phrases_values[key_phrases_pi]
     return probability
 
 def sumPrior(graph, key_phrases_values):
@@ -119,7 +160,7 @@ def sumDenominator(graph, key_phrase_pk, key_phrase_pj):
         if key_phrase_pj in graph:
             for key_phrase_pj_value in graph[key_phrase_pj]:
                 if key_phrase_pj_value == key_phrase_pk:
-                    res_weight += 1                             #Calcula o peso.  Querem por outra cena?
+                    res_weight += calculateOcurrenceWeight(graph, key_phrase_pk, key_phrase_pj)
     return res_weight
 
 
@@ -129,30 +170,32 @@ def sum2Parcel(key_phrase_pi, key_phrase_pk, key_phrase_pj, graph):
         if key_phrase_pi in graph:
             for key_phrase_pi_value in graph[key_phrase_pi]:
                 if key_phrase_pi_value == key_phrase_pj:
-                    sum_res = (0.375*0.25)/(sumDenominator(graph, key_phrase_pk, key_phrase_pj))
+                    sum_res = (0.375*calculateOcurrenceWeight(graph, key_phrase_pk, key_phrase_pi))/(sumDenominator(graph, key_phrase_pk, key_phrase_pj))
     return sum_res
-'''
+
 def sum1Parcel(graph, key_phrase_pi, key_phrases_values):
-    return 0.15 * (calculateStaticPrior(graph, key_phrase_pi, 0) / sumPrior(graph, key_phrases_values)) + (1-0.15)
-'''
+    return (0.15 * (calculateTfidfPrior(graph, key_phrase_pi, key_phrases_values, 1) / sumPrior(graph, key_phrases_values))) + (1-0.15)
+
 
 def pageRankExtended(graph, key_phrases_values, key_phrase_pi, key_phrase_pk, key_phrase_pj):
 
-    result_parcel_1 = 1.0 * sum1Parcel(graph, key_phrase_pi, key_phrases_values)
+    result_parcel_1 = 1.0 * sum1Parcel(graph, key_phrase_pi, key_phrases_values)  #working
     result_parcel_2 = 1.0 * sum2Parcel(key_phrase_pi, key_phrase_pk, key_phrase_pj, graph)
 
     print "Page Rank result", result_parcel_1 * result_parcel_2
     return result_parcel_1 * result_parcel_2 
 
+
 def initializer():
-    key_phrase_dic, key_phrases_values, key_phrases_list = score_candidates('teste')
-    #key_phrases_occurrence_phrase = keyPhraseOcurrenceLine('teste', key_phrases_list)
-    #calculatePositionPrior(key_phrases_occurrence_phrase, "anthony", 1)
+
+    train_data = read_files_text('NLM_500/documents/')
+    key_phrase_dic, key_phrases_values, key_phrases_list = score_candidates('teste', train_data)
     list_phrases = phrases_spliter('teste')
     graph = create_graph(list_phrases, key_phrase_dic)
-    print graph
-    calculateOcurrenceWeight(graph, "anthony", "john")
+    #key_phrases_occurrence_phrase = keyPhraseOcurrenceLine('teste', key_phrases_list)
+    #calculatePositionPrior(key_phrases_occurrence_phrase, "anthony", 1)
+    #calculateOcurrenceWeight(graph, "john", "home")
 
-    #pageRankExtended(graph, key_phrases_values, "anthony", "anthony", "anthony")
+    pageRankExtended(graph, key_phrases_values, "john", "home", "does")
 
 initializer()
