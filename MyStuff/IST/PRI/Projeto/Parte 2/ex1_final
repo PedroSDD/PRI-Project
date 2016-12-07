@@ -47,19 +47,31 @@ def phrases_spliter(filename):
             list_phrases.append(words.split())
         return list_phrases
 
-def check_keys(key_word, graph):
-    for key in graph:
-        if key_word in graph:
-            return True
-    return False
+def generate_graph(all_edges_list):
+    graph = {}
+    edges_list=[]
+
+    for line in all_edges_list:
+        edges_list = line
+
+        for value in edges_list:
+            if value not in graph:
+                for other_value in edges_list:
+                    if value != other_value:
+                        graph.setdefault(value, []).append(other_value)
+
+            if value in graph:
+                for other_value in edges_list:
+                    if other_value not in graph[value] and value != other_value:
+                        graph.setdefault(value, []).append(other_value)
+
+    return graph
 
 
 def create_graph(list_phrases, key_phrases_dic):
     graph = {}
     list_keywords_phrase = []
-    list_keywords_phrase_bi = []
-    list_keywords_phrase_tri = []
-
+    all_edges_list = []
 
     for phrase in list_phrases:
 
@@ -70,28 +82,21 @@ def create_graph(list_phrases, key_phrases_dic):
         for word in sentence:
             if word in key_phrases_dic:
                 list_keywords_phrase.append(word)
-                if check_keys(word, graph) == False:
-                    graph[word] = list_keywords_phrase
-
-
 
         for j in bigrams:
             big_str = j[0] + ' ' + j[1]
             if big_str in key_phrases_dic:
-                list_keywords_phrase_bi.append(big_str)
-                if check_keys(big_str, graph) == False:
-                    graph[big_str] = list_keywords_phrase_bi
+                list_keywords_phrase.append(big_str)
 
         for i in trigrams:
             trig_str = i[0] + ' ' + i[1] + ' ' + i[2]
             if trig_str in key_phrases_dic:
-                list_keywords_phrase_tri.append(trig_str)
-                if check_keys(trig_str, graph) == False:
-                    graph[trig_str] = list_keywords_phrase_tri
+                list_keywords_phrase.append(trig_str)
 
+        all_edges_list.append(list_keywords_phrase)
         list_keywords_phrase = []
-        list_keywords_phrase_bi = []
-        list_keywords_phrase_tri = []
+
+    graph = generate_graph(all_edges_list)
 
     return graph
 
@@ -131,6 +136,7 @@ def initializer():
     key_phrase_dic = score_candidates('10933267.txt', train_data)
     list_phrases = phrases_spliter('10933267.txt')
     graph = create_graph(list_phrases, key_phrase_dic)
-    pageRank(graph, 1, 1)
+    print graph
+    pageRank(graph, 0.15, 1)
 
 initializer()
