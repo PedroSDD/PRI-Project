@@ -134,9 +134,9 @@ def pageRank(grafo, d, l):
                 v = anterior[reference] / (len(invertido[reference])*1.0)
                 somatorio += anterior[reference]/(len(invertido[reference])*1.0)
             resultado[page] = (1-d) * 1.0 / N + d * somatorio
-    print resultado
-    newA = dict(sorted(resultado.iteritems(), key=operator.itemgetter(1), reverse=True)[:5])
-    print newA
+    page_rank_result = dict(sorted(resultado.iteritems(), key=operator.itemgetter(1), reverse=True)[:5])
+
+    print "Page Rank result =", page_rank_result
     return resultado
 
 
