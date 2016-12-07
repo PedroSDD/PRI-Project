@@ -105,6 +105,38 @@ def create_graph(list_phrases, key_phrases_dic):
 
     return graph
 
+def pageRank(grafo, d, l, key_phrase_pj):
+    resultado = {}
+    invertido = {}
+
+    for key, value in grafo.iteritems():
+        if key not in invertido.keys():
+            invertido[key] = []
+        for reference in value:
+            if reference not in invertido.keys():
+                invertido[reference] = []
+            invertido[reference].append(key)
+
+    numPages = len(grafo)
+    for key, value in grafo.iteritems():
+        resultado[key] = 1/(numPages*1.0)
+
+    N = (numPages*1.0)
+    for times in range(1, l+1):
+        anterior = resultado.copy()
+        for page in resultado.keys():
+            somatorio = 0
+            for reference in grafo[page]:
+                v = anterior[reference] / (len(invertido[reference])*1.0)
+                somatorio += anterior[reference]/(len(invertido[reference])*1.0)
+            resultado[page] = (1-d) * 1.0 / N + d * somatorio
+
+    for key_phrase in resultado:
+        if key_phrase == key_phrase_pj:
+            result = resultado[key_phrase]
+
+    return result
+
 
 def keyPhraseOcurrenceLine(filename, key_phrases_list):
     key_phrases_occurrence_phrase = {}
@@ -180,7 +212,7 @@ def sum2Parcel(key_phrase_pi, key_phrase_pk, key_phrase_pj, graph):
         if key_phrase_pi in graph:
             for key_phrase_pi_value in graph[key_phrase_pi]:
                 if key_phrase_pi_value == key_phrase_pj:
-                    sum_res = (0.15*calculateOcurrenceWeight(graph, key_phrase_pk, key_phrase_pi))/(sumDenominator(graph, key_phrase_pk, key_phrase_pj))
+                    sum_res = (pageRank(graph, 0.15, 49, key_phrase_pj)*calculateOcurrenceWeight(graph, key_phrase_pk, key_phrase_pi))/(sumDenominator(graph, key_phrase_pk, key_phrase_pj))
     return sum_res
 
 def sum1Parcel(graph, key_phrase_pi, key_phrases_values):
@@ -202,9 +234,6 @@ def initializer():
     key_phrase_dic, key_phrases_values, key_phrases_list = score_candidates('teste', train_data)
     list_phrases = phrases_spliter('teste')
     graph = create_graph(list_phrases, key_phrase_dic)
-    #key_phrases_occurrence_phrase = keyPhraseOcurrenceLine('teste', key_phrases_list)
-    #calculatePositionPrior(key_phrases_occurrence_phrase, "anthony", 1)
-    #calculateOcurrenceWeight(graph, "john", "home")
     pageRankExtended(graph, key_phrases_values, "home", "does", "anthony")
 
 initializer()
