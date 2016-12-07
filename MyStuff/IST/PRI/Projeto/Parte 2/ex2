@@ -36,7 +36,7 @@ def score_candidates(filename, train):
 
     for word in feature_name_sorted:
         key_phrases_dic[word] = 0
-    print key_phrases_values
+    #print key_phrases_values
     return key_phrases_dic, key_phrases_values, feature_name_sorted
 
 def phrases_spliter(filename):
@@ -69,25 +69,28 @@ def create_graph(list_phrases, key_phrases_dic):
         for word in sentence:
             if word in key_phrases_dic:
                 list_keywords_phrase.append(word)
-                graph[word] = list_keywords_phrase
+                if check_keys(word, graph) == False:
+                    graph[word] = list_keywords_phrase
 
         for j in bigrams:
             big_str = j[0] + ' ' + j[1]
             if big_str in key_phrases_dic:
                 list_keywords_phrase_bi.append(big_str)
-                graph[big_str] = list_keywords_phrase_bi
+                if check_keys(big_str, graph) == False:
+                    graph[big_str] = list_keywords_phrase_bi
 
         for i in trigrams:
             trig_str = i[0] + ' ' + i[1] + ' ' + i[2]
             if trig_str in key_phrases_dic:
                 list_keywords_phrase_tri.append(trig_str)
-                graph[trig_str] = list_keywords_phrase_tri
+                if check_keys(trig_str, graph) == False:
+                    graph[trig_str] = list_keywords_phrase_tri
 
         list_keywords_phrase = []
         list_keywords_phrase_bi = []
         list_keywords_phrase_tri = []
-
     return graph
+
 
 def keyPhraseOcurrenceLine(filename, key_phrases_list):
     key_phrases_occurrence_phrase = {}
@@ -110,12 +113,12 @@ def calculatePositionPrior(key_phrases_occurrence_phrase, node, flag):
     if flag != 0:
         for keyphrase in key_phrases_occurrence_phrase:
             for nr_phrase in key_phrases_occurrence_phrase.get(node, []):
-                probability += 1.0/nr_phrase
+                probability += nr_phrase
     else:
         if node in key_phrases_occurrence_phrase:
             for nr_phrase in key_phrases_occurrence_phrase.get(node, []):
                 print nr_phrase
-                probability += 1.0/nr_phrase
+                probability += nr_phrase
     return probability
 
 #Topic three
@@ -126,13 +129,6 @@ def calculateOcurrenceWeight(graph, key_phrase_pk, key_phrase_pj):
             for word in graph[key_phrase_pk]:
                 if word == key_phrase_pj:
                     weight_value += 1
-                    '''
-        if key_phrase_pj == key_phrase:
-            for word in graph[key_phrase_pj]:
-                if word == key_phrase_pj:
-                    weight_value += 1
-                    '''
-    print weight_value
     return weight_value
 
 #Topic two
@@ -170,11 +166,11 @@ def sum2Parcel(key_phrase_pi, key_phrase_pk, key_phrase_pj, graph):
         if key_phrase_pi in graph:
             for key_phrase_pi_value in graph[key_phrase_pi]:
                 if key_phrase_pi_value == key_phrase_pj:
-                    sum_res = (0.375*calculateOcurrenceWeight(graph, key_phrase_pk, key_phrase_pi))/(sumDenominator(graph, key_phrase_pk, key_phrase_pj))
+                    sum_res = (0.15*calculateOcurrenceWeight(graph, key_phrase_pk, key_phrase_pi))/(sumDenominator(graph, key_phrase_pk, key_phrase_pj))
     return sum_res
 
 def sum1Parcel(graph, key_phrase_pi, key_phrases_values):
-    return (0.15 * (calculateTfidfPrior(graph, key_phrase_pi, key_phrases_values, 1) / sumPrior(graph, key_phrases_values))) + (1-0.15)
+    return (0.15 * (calculateTfidfPrior(graph, key_phrase_pi, key_phrases_values, 0) / sumPrior(graph, key_phrases_values))) + (1-0.15)
 
 
 def pageRankExtended(graph, key_phrases_values, key_phrase_pi, key_phrase_pk, key_phrase_pj):
@@ -195,7 +191,6 @@ def initializer():
     #key_phrases_occurrence_phrase = keyPhraseOcurrenceLine('teste', key_phrases_list)
     #calculatePositionPrior(key_phrases_occurrence_phrase, "anthony", 1)
     #calculateOcurrenceWeight(graph, "john", "home")
-
-    pageRankExtended(graph, key_phrases_values, "john", "home", "does")
+    pageRankExtended(graph, key_phrases_values, "home", "does", "anthony")
 
 initializer()
