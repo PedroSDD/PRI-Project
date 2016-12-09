@@ -135,6 +135,6 @@ def initializer():
     key_phrase_dic = score_candidates('10933267.txt', train_data)
     list_phrases = phrases_spliter('10933267.txt')
     graph = create_graph(list_phrases, key_phrase_dic)
-    pageRank(graph, 0.15, 1)
+    pageRank(graph, 0.15, 49)
 
 initializer()
