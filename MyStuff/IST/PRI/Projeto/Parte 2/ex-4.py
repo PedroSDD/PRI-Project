@@ -36,7 +36,7 @@ def score_candidates(filename):
     dense = my_doc_tfidf.todense()
     densed_idf = dense[0].tolist()[0]
     scores = zip(range(0, len(densed_idf)), densed_idf)
-    feature_sorted = sorted(scores, key=itemgetter(1))[-20:]
+    feature_sorted = sorted(scores, key=itemgetter(1))[-8:]
 
     feature_name_sorted = []
 
